@@ -11,7 +11,7 @@
 #include <direct.h>
 #include "utils/utils.h"
 
-char *new_id_name(){
+char *new_id_name() {
     char *name = (char *) calloc(MAX_ID_NAME_LENGTH, sizeof(char *));
 //    char *name = (char *)malloc(MAX_ID_NAME_LENGTH);
 //    memset(name, 0, MAX_ID_NAME_LENGTH);
@@ -106,48 +106,42 @@ int dongmendb_tokenize(char *str, char ***tokens)
 返回值：  0  删除
          -1  路径不对，或其它情况，没有执行删除操作
 */
-int  removeDir(const char*  dirPath)
-{
+int removeDir(const char *dirPath) {
 
     struct _finddata_t fb;   //查找相同属性文件的存储结构体
-    char  path[250];
-    long    handle;
-    int  resultone;
-    int   noFile;            //对系统隐藏文件的处理标记
+    char path[250];
+    long handle;
+    int resultone;
+    int noFile;            //对系统隐藏文件的处理标记
 
     noFile = 0;
     handle = 0;
 
 
     //制作路径
-    strcpy(path,dirPath);
-    strcat (path,"/*");
+    strcpy(path, dirPath);
+    strcat(path, "/*");
 
-    handle = _findfirst(path,&fb);
+    handle = _findfirst(path, &fb);
     //找到第一个匹配的文件
-    if (handle != 0)
-    {
+    if (handle != 0) {
         //当可以继续找到匹配的文件，继续执行
-        while (0 == _findnext(handle,&fb))
-        {
+        while (0 == _findnext(handle, &fb)) {
             //windows下，常有个系统文件，名为“..”,对它不做处理
-            noFile = strcmp(fb.name,"..");
+            noFile = strcmp(fb.name, "..");
 
-            if (0 != noFile)
-            {
+            if (0 != noFile) {
                 //制作完整路径
-                memset(path,0,sizeof(path));
-                strcpy(path,dirPath);
-                strcat(path,"/");
-                strcat (path,fb.name);
+                memset(path, 0, sizeof(path));
+                strcpy(path, dirPath);
+                strcat(path, "/");
+                strcat(path, fb.name);
                 //属性值为16，则说明是文件夹，迭代
-                if (fb.attrib == 16)
-                {
+                if (fb.attrib == 16) {
                     removeDir(path);
                 }
                     //非文件夹的文件，直接删除。对文件属性值的情况没做详细调查，可能还有其他情况。
-                else
-                {
+                else {
                     remove(path);
                 }
             }
@@ -158,7 +152,7 @@ int  removeDir(const char*  dirPath)
     }
     //移除文件夹
     resultone = rmdir(dirPath);
-    return  resultone;
+    return resultone;
 }
 
 
@@ -169,48 +163,42 @@ int  removeDir(const char*  dirPath)
 返回值：  0  删除
          -1  路径不对，或其它情况，没有执行删除操作
 */
-int  removeDirW(const wchar_t*  dirPath)
-{
+int removeDirW(const wchar_t *dirPath) {
 
     struct _wfinddata_t fb;   //查找相同属性文件的存储结构体
 
-    wchar_t  path[250];
-    long    handle;
-    int  resultone;
-    int   noFile;            //对系统隐藏文件的处理标记
+    wchar_t path[250];
+    long handle;
+    int resultone;
+    int noFile;            //对系统隐藏文件的处理标记
 
     noFile = 0;
     handle = 0;
 
     //制作路径
-    wcscpy(path,dirPath);
-    wcscat (path,L"/*");
+    wcscpy(path, dirPath);
+    wcscat(path, L"/*");
 
-    handle = _wfindfirst(path,&fb);
+    handle = _wfindfirst(path, &fb);
     //找到第一个匹配的文件
-    if (handle != 0)
-    {
+    if (handle != 0) {
         //当可以继续找到匹配的文件，继续执行
-        while (0 == _wfindnext(handle,&fb))
-        {
+        while (0 == _wfindnext(handle, &fb)) {
             //windows下，常有个系统文件，名为“..”,对它不做处理
             noFile = wcscmp(fb.name, L"..");
 
-            if (0 != noFile)
-            {
+            if (0 != noFile) {
                 //制作完整路径
-                memset(path,0,sizeof(path));
-                wcscpy(path,dirPath);
-                wcscat(path,L"/");
-                wcscat (path,fb.name);
+                memset(path, 0, sizeof(path));
+                wcscpy(path, dirPath);
+                wcscat(path, L"/");
+                wcscat(path, fb.name);
                 //属性值为16，则说明是文件夹，迭代
-                if (fb.attrib == 16)
-                {
+                if (fb.attrib == 16) {
                     removeDirW(path);
                 }
                     //非文件夹的文件，直接删除。对文件属性值的情况没做详细调查，可能还有其他情况。
-                else
-                {
+                else {
                     _wremove(path);
                 }
             }
@@ -221,6 +209,6 @@ int  removeDirW(const wchar_t*  dirPath)
     }
     //移除文件夹
     resultone = _wrmdir(dirPath);
-    return  resultone;
+    return resultone;
 }
 

@@ -522,7 +522,7 @@ Token *Tokenizer::getNextToken() {
     }
 
     if (curr == '\0') {
-        return NULL;
+        return nullptr;
     } else if (isalpha(curr) || curr == '_') {
         return _word();
     } else if (curr == '0') {
