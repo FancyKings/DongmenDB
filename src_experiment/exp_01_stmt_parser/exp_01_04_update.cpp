@@ -106,7 +106,7 @@ sql_stmt_update *UpdateParser::parse_sql_stmt_update() {
     }
 
     // 构造返回值
-    sql_stmt_update * sqlStmtUpdate = (sql_stmt_update *)
+    auto * sqlStmtUpdate = (sql_stmt_update *)
             calloc(1, sizeof(sql_stmt_update));
     sqlStmtUpdate->tableName = tableName;
     sqlStmtUpdate->fields.assign(fields->begin(), fields->end());
