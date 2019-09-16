@@ -19,8 +19,6 @@
 /* TODO: parse_sql_stmt_update， update语句解析 */
 // update student set sage=20[,fieldname=expr] where sage=22
 sql_stmt_update *UpdateParser::parse_sql_stmt_update() {
-//    fprintf(stderr, \
-//    "TODO: update is in debug yet. in parse_sql_stmt_update \n");
 
     // 存储 数据表 名称
     char *tableName = nullptr;
@@ -38,7 +36,7 @@ sql_stmt_update *UpdateParser::parse_sql_stmt_update() {
     Token *token = parseNextToken();
     if (matchToken(TOKEN_RESERVED_WORD, "update") == 0) {
         strcpy(this->parserMessage, \
-        "ERROR UPDATE SQL PARSE IN parse_sql_update \n");
+        "Update statement parsing error: did not match the UPDATE keyword \n");
         return nullptr;
     }
 
@@ -48,7 +46,7 @@ sql_stmt_update *UpdateParser::parse_sql_stmt_update() {
         tableName = new_id_name();
         strcpy(tableName, token->text);
     } else {
-        strcpy(this->parserMessage, "ERROR SQL: MISSING TABLE NAME \n");
+        strcpy(this->parserMessage, "Update statement parsing error: did not match the TABLE NAME \n");
         return nullptr;
     }
 
@@ -56,7 +54,7 @@ sql_stmt_update *UpdateParser::parse_sql_stmt_update() {
     // 此时 currToken 肯定不为 NULL 且并非我们所需要的数据，所以吃掉读取下一个
     token = parseEatAndNextToken();
     if (matchToken(TOKEN_RESERVED_WORD, "set") == 0) {
-        strcpy(this->parserMessage, "ERROR SQL: MISSING SET");
+        strcpy(this->parserMessage, "Update statement parsing error: did not match the SET keyword \n");
         return nullptr;
     }
 
@@ -74,7 +72,7 @@ sql_stmt_update *UpdateParser::parse_sql_stmt_update() {
             strcpy(fieldName, token->text);
             fields->push_back(fieldName);
         } else {
-            strcpy(this->parserMessage, "ERROR SQL: INVALID FIELD NAME \n");
+            strcpy(this->parserMessage, "Update statement parsing error: did not match the FIELD NAME \n");
             return nullptr;
         }
 
@@ -83,7 +81,7 @@ sql_stmt_update *UpdateParser::parse_sql_stmt_update() {
 
         // 匹配 等号，标志下一步存入的是字段的值
         if (matchToken(TOKEN_EQ, "=") == 0) {
-            strcpy(this->parserMessage, "ERROR SQL: NO EQUAL \n");
+            strcpy(this->parserMessage, "Update statement parsing error: did not match the key symbol EQUALS \n");
             return nullptr;
         }
 
@@ -97,10 +95,9 @@ sql_stmt_update *UpdateParser::parse_sql_stmt_update() {
     where = SRATable(TableReference_make(tableName, nullptr));
     if (token != nullptr) {
         if (matchToken(TOKEN_RESERVED_WORD, "where") == 0) {
-            strcpy(this->parserMessage, "ERROR SQL: NO WHERE ELEMENT \n");
+            strcpy(this->parserMessage, "Update statement parsing error: did not match the WHERE keyword \n");
             return nullptr;
         }
-        // printf("Update Paser OK \n");
         Expression *cond = parseExpressionRD();
         where = SRASelect(where, cond);
     }

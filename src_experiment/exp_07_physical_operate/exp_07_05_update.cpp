@@ -3,10 +3,6 @@
 //
 
 #include <physicalplan/ExecutionPlan.h>
-#include <physicalplan/TableScan.h>
-#include <physicalplan/Select.h>
-#include <physicalplan/Project.h>
-#include <physicalplan/Join.h>
 
 /*执行 update 语句的物理计划，返回修改的记录条数
  * 返回大于等于0的值，表示修改的记录条数；
@@ -38,6 +34,7 @@ int ExecutionPlan::executeUpdate(DongmenDB *db, sql_stmt_update *sqlStmtUpdate, 
 
     // 移动扫描指针到前部
     tableScan->beforeFirst();
+
     // 更新计数
     int updated = 0;
 
@@ -53,13 +50,17 @@ int ExecutionPlan::executeUpdate(DongmenDB *db, sql_stmt_update *sqlStmtUpdate, 
             tableScan->evaluateExpression(fieldsExpr[i], tableScan, val);
 
             if (val->type != fieldType) {
-                printf("ERROR SQL: MATCH FAILED");
+                printf("Update statement execution error: did not match the same data type \n");
                 return -1;
             }
 
             if (val->type == DATA_TYPE_INT) {
                 tableScan->setInt(tableName, currFieldName, val->intValue);
             } else if (val->type == DATA_TYPE_CHAR) {
+                int maxLength = tableScan->getField(tableName, currFieldName)->length;
+                if (maxLength < strlen(val->strValue)) {
+                    val->strValue[maxLength] = '\0';
+                }
                 tableScan->setString(tableName, currFieldName, val->strValue);
             } else if (val->type == DATA_TYPE_BOOLEAN) {
 //                tableScan->setBoolean
