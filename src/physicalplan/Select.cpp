@@ -14,7 +14,7 @@ int Select::beforeFirst() {
 
 int Select::next() {
     while (scan->next()){
-        variant *var = (variant *)calloc(1, sizeof(variant));
+        variant *var = (variant *)calloc(sizeof(variant),1);
         evaluateExpression(cond, scan, var);
         if (var->type == DATA_TYPE_BOOLEAN && var->booleanValue){
             return 1;
@@ -51,7 +51,7 @@ variant* Select::getValue(string fieldName){
 
 string Select::getString(string tableName, string fieldName) {
     FieldInfo *fi = getField(tableName, fieldName);
-    char *value = (char *) calloc(1, fi->length * sizeof(char));
+    char *value = (char *) calloc(fi->length, 1);
     return scan->getString( tableName, fieldName);
 };
 

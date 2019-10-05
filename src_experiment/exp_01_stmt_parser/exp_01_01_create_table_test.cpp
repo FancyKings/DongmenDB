@@ -16,7 +16,7 @@
 
 
 int select(const char *sqlselect) {
-    char *sql = (char *) calloc(1, strlen(sqlselect));
+    char *sql = (char *) calloc(strlen(sqlselect), 1);
     strcpy(sql, sqlselect);
     Tokenizer *tokenizer = new Tokenizer(sql);
     Parser *parser = new Parser(tokenizer);
@@ -38,7 +38,7 @@ int select(const char *sqlselect) {
 }
 
 int test(const char *dbname, const char *strselect) {
-    DongmenDB *newdb = (DongmenDB *) calloc(1, sizeof(DongmenDB));
+    DongmenDB *newdb = (DongmenDB *) calloc(sizeof(dongmendb), 1);
     int rc = dongmendb_open(dbname, newdb);
     int count = select(newdb, strselect);
     return count;
