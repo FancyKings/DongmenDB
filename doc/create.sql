@@ -68,5 +68,7 @@ select student.*, sc.*, course.* from student, sc, course where student.sno = sc
 select * from tablecat
 select * from fieldcat
 
+.open demodb
+update student set sname = "ans_1" where sno = "2012010101"
 
-update student set sname = "tom" where sno = "001"
+select * from student
