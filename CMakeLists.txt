@@ -7,6 +7,9 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.7)
 PROJECT(DongmenDB)
 
+# 清除 Build 时 Message 窗口显示的 Warning
+add_definitions("-w")
+
 SET(CMAKE_CXX_STANDARD 11)
 
 #设置执行文件输出目录
@@ -43,5 +46,3 @@ AUX_SOURCE_DIRECTORY(. MAIN_SRC_LIST)
 ADD_EXECUTABLE(dmdb ${MAIN_SRC_LIST})
 # 设置dmdb的依赖
 TARGET_LINK_LIBRARIES(dmdb ${EXTRA_LIBS})
-
-

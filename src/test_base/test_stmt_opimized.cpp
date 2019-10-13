@@ -103,23 +103,39 @@ int opt_fields_test(Expression *expr, SRA_t *sra, TableManager *tableManager, Tr
     }
     if (expr->term != NULL) {
         switch (expr->term->t) {
-            case TERM_COLREF:
-                return opt_field_test(sra, expr->term->ref->tableName, expr->term->ref->columnName, tableManager,
+            case TERM_COLREF: {
+
+                int ret = opt_field_test(sra, expr->term->ref->tableName, expr->term->ref->columnName, tableManager,
                                       transaction);
+                printf("\nDEBUG_7_opt_fields_test $ret = %d\n", ret);
+                SRA_print(sra);
+
+                return ret;
+            }
             default:
                 return 0;
         }
     } else {
-        return opt_fields_test(expr->nextexpr, sra, tableManager, transaction);
+
+        int ret = opt_fields_test(expr->nextexpr, sra, tableManager, transaction);
+
+        printf("\nDEBUG_6_opt_fields_test $ret = %d\n", ret);
+
+        return ret;
     }
 }
 
 int opt_optimed_test(Expression *expr, SRA_t *sra, TableManager *tableManager, Transaction *transaction) {
 
     switch (sra->t) {
-        case SRA_JOIN:
+        case SRA_JOIN: {
             /*检测expr中的字段属性是否在某个操作对象中，若是则返回1*/
-            return opt_fields_test(expr, sra, tableManager, transaction);
+            int ret = opt_fields_test(expr, sra, tableManager, transaction);
+
+            printf("\nDEBUG_5_opt_optimied_test $ret = %d\n", ret);
+
+            return ret;
+        }
         default:
             return 0;
     }
@@ -132,10 +148,17 @@ int opt_test(SRA_t *sra, TableManager *tableManager, Transaction *transaction) {
             /*寻找子树中JOIM操作，若条件属性均包含在JOIN操作的某个分支中，则返回1*/
             int ret = opt_optimed_test(sra->select.cond, sra->select.sra, tableManager, transaction);
             if (ret) {
+
+                printf("\nDEBUG_3 : $ret = %d\n", ret);
+
                 return ret;
             } else {
                 /*检查子树中的SELECT*/
-                return opt_test(sra->select.sra, tableManager, transaction);
+                ret = opt_test(sra->select.sra, tableManager, transaction);
+
+                printf("\nDEBUG_4 : $ret = %d\n", ret);
+
+                return ret;
             }
         };
         case SRA_TABLE: {
@@ -178,8 +201,12 @@ int TestStmtOptimized::opt_condition_pushdown_test(const char *sqlselect) {
         return ret;
     }
 
+    printf("\nDEBUG_1 : $ret = %d\n", ret);
+
     /* 2 检查每个SRA_Select 是否在最优位置,若不是则返回1*/
     ret = opt_test(optimizedStmt, test_db_ctx->db->tableManager, test_db_ctx->db->tx);
+
+    printf("\nDEBUG_2 : $ret = %d\n", ret);
 
     return ret;
 }
