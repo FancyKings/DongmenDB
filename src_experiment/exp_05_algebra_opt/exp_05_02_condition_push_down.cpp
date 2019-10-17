@@ -57,10 +57,10 @@ SRA_t *dongmengdb_algebra_optimize_condition_pushdown(SRA_t *sra,
     SRA_print(sra);
 
     splitAndConcatenate(&sra);
-    printf("\n=====================================\n");
+    printf("\n=================SPLIT===============\n");
     SRA_print(sra);
 
-    printf("\n=====================================\n");
+    printf("\n================EXCHANGE=============\n");
     conditionalExchange(&sra, tableManager, transaction);
     SRA_print(sra);
     printf("\n==================END================\n");
@@ -77,9 +77,6 @@ void splitAndConcatenate(SRA_s **sra_point) {
     if (sra_data == nullptr) {
         return;
     }
-
-    // 打印接收到的 SRA
-//    SRA_print(sra_data);
 
     // 根据关系代数的类型功能分别处理
     if (sra_data->t == SRA_SELECT) {
@@ -100,9 +97,6 @@ void splitAndConcatenate(SRA_s **sra_point) {
         splitAndConcatenate(&(sra_data->join.sra1));
         splitAndConcatenate(&(sra_data->join.sra2));
 
-    } else {
-//        printf("\n\nThe above received SRA does "
-//               "not specify a legal type of operation.\n\n");
     }
 }
 
@@ -187,11 +181,8 @@ bool hasColumnNameInSra(SRA_t *sra, Expression *pExpression, TableManager *table
 
     } else if (sraType == SRA_JOIN) {
 
-//        return (hasColumnNameInSra(sra->join.sra1, pExpression, tableManager, transaction)
-//                | hasColumnNameInSra(sra->join.sra2, pExpression, tableManager, transaction));
-        auto status = hasColumnNameInSra(sra->join.sra1, pExpression, tableManager, transaction);
-
-        return status ? (status) : (hasColumnNameInSra(sra->join.sra2, pExpression, tableManager, transaction));
+        return (hasColumnNameInSra(sra->join.sra1, pExpression, tableManager, transaction)
+                | hasColumnNameInSra(sra->join.sra2, pExpression, tableManager, transaction));
 
     } else if (sraType == SRA_TABLE) {
 
@@ -200,10 +191,6 @@ bool hasColumnNameInSra(SRA_t *sra, Expression *pExpression, TableManager *table
             if (point->term != nullptr && point->term->t == TERM_COLREF) {
 
                 if (point->term->ref->tableName != nullptr) {
-
-                    auto debug_1 = point->term->ref->tableName;
-                    auto debug_2 = point->term->ref->columnName;
-                    auto debug_3 = sra->table.ref->table_name;
 
                     if (strcmp(point->term->ref->tableName,
                                sra->table.ref->table_name) == 0) {
@@ -216,7 +203,7 @@ bool hasColumnNameInSra(SRA_t *sra, Expression *pExpression, TableManager *table
                             sra->table.ref->table_name, transaction);
 
                     if (hasColumnNameInFieldsName(fields->fieldsName,
-                                                   point->term->ref->columnName)) {
+                                                  point->term->ref->columnName)) {
                         return true;
                     }
                 }
@@ -242,7 +229,6 @@ void conditionalExchange(SRA_t **pS, TableManager *tableManager, Transaction *tr
 
         auto selectSra = sra->select.sra;
 
-        // 把两个 select 倒过来了
         if (selectSra->t == SRA_SELECT) {
 
             sra->select.sra = selectSra->select.sra;
@@ -250,7 +236,6 @@ void conditionalExchange(SRA_t **pS, TableManager *tableManager, Transaction *tr
             *pS = selectSra;
 
             conditionalExchange(&(selectSra->select.sra), tableManager, transaction);
-//            conditionalExchange(&(sra->select.sra), tableManager, transaction);
 
         } else if (selectSra->t == SRA_JOIN) {
 
@@ -266,7 +251,6 @@ void conditionalExchange(SRA_t **pS, TableManager *tableManager, Transaction *tr
                 *pS = selectSra;
 
                 conditionalExchange(&(selectSra->join.sra1), tableManager, transaction);
-//                conditionalExchange(&(sra.))
 
             } else if (!leftBranch && rightBranch) {
 
